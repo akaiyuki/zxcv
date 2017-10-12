@@ -1,0 +1,116 @@
+apply plugin: 'com.android.library'
+//apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:26.+'
+    testCompile 'junit:junit:4.12'
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+group = 'com.codesyaona.android'
+version = '1.0'
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            name 'Sample'
+            description 'sample library upload, no function yet'
+            url 'https://github.com/akaiyuki/elf'
+            inceptionYear '2016'
+
+            packaging 'aar'
+            groupId 'com.codesyaona.android'
+            artifactId 'codesyaona'
+            version '1.0'
+
+            licenses {
+                license {
+                    name 'The MIT License (MIT)'
+                    url 'https://opensource.org/licenses/MIT'
+                }
+            }
+            scm {
+                connection 'https://github.com/akaiyuki/elf.git'
+                url 'https://github.com/akaiyuki/elf'
+
+            }
+            developers {
+                developer {
+                    id = 'codesyaona'
+                    name 'Trish'
+                }
+            }
+        }
+    }
+}
+
+
+Properties bintrayProperties = new Properties()
+bintrayProperties.load(project.rootProject.file('bintray.properties').newDataInputStream())
+
+bintray {
+    user = bintrayProperties.getProperty('user')
+    key = bintrayProperties.get('key')
+    configurations = ['archives']
+    pkg {
+        repo = 'asd'
+        name = 'com.av.dev.avcorechat'
+        userOrg = 'trish'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/akaiyuki.git'
+        publish = true
+        version {
+            name = '0.1.1'
+            desc = ''
+            released = new Date()
+            vcsTag = 'v1.0.0'
+        }
+    }
+}
